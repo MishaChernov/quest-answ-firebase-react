@@ -5,7 +5,7 @@ module.exports = (req, res, next) => {
 
     if (
         req.headers.authorization &&
-        req.headers.authorization.startsWIth('Bearer ')
+        req.headers.authorization.startsWith('Bearer ')
     ) {
         idToken = req.headers.authorization.split('Bearer ')[1];
     } else {
