@@ -5,9 +5,10 @@ const app = require('express')();
 const cors = require('cors');
 app.use(cors());
 
-const { login } = require('./handlers/users');
+const { login, signup } = require('./handlers/users');
 
 // users routes
 app.post('/login', login);
+app.post('/signup', signup);
 
 exports.api = functions.region('europe-west1').https.onRequest(app);
