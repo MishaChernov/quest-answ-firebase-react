@@ -59,3 +59,27 @@ exports.createQuestion = (req, res) => {
     // eslint-disable-next-line consistent-return
     return;
 };
+
+exports.getQuestion = (req, res) => {
+    db.doc(`/questions/${req.params.questionId}`)
+        .get()
+        .then((doc) => {
+            if (!doc.exists)
+                return res
+                    .status(404)
+                    .json({ error: 'Question was not found' });
+
+            let question = doc.data();
+
+            //TODO: Get comments for this post and push to the response
+
+            return res.status(200).json(question);
+        })
+        .catch((err) => {
+            console.error(err);
+            return res.status(404).json({ error: 'Question not found' });
+        });
+
+    // eslint-disable-next-line consistent-return
+    return;
+};
