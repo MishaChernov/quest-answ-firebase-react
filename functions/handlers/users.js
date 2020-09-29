@@ -56,7 +56,7 @@ exports.signup = (req, res) => {
         email: req.body.email,
         password: req.body.password,
         confirmPassword: req.body.confirmPassword,
-        username: req.body.username,
+        userHandle: req.body.userHandle
     };
 
     let errors = {};
@@ -77,15 +77,15 @@ exports.signup = (req, res) => {
         errors.confirmPassword = 'Passwords must match';
     }
 
-    if (isEmpty(user.username)) {
-        errors.username = 'Must not be empty';
+    if (isEmpty(user.userHandle)) {
+        errors.userHandle = 'Must not be empty';
     }
 
     if (Object.keys(errors).length > 0) return res.status(400).json({ errors });
 
     let userId, token;
 
-    db.doc(`/users/${user.username}`)
+    db.doc(`/users/${user.userHandle}`)
         .get()
         .then((doc) => {
             if (doc.exists) {
@@ -109,11 +109,12 @@ exports.signup = (req, res) => {
                 uid: userId,
                 email: user.email,
                 userPhoto: `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/no-img.png?alt=media`,
-                username: user.username,
+                userHandle: user.userHandle,
+                userName: 'Somename',
                 createdAt: new Date().toISOString(),
             };
 
-            return db.doc(`/users/${user.username}`).set(userCredentials);
+            return db.doc(`/users/${user.userHandle}`).set(userCredentials);
         })
         .then(() => {
             return res.status(200).json({ token });
@@ -130,4 +131,7 @@ exports.signup = (req, res) => {
                 });
             }
         });
+    
+    // eslint-disable-next-line consistent-return
+    return;
 };

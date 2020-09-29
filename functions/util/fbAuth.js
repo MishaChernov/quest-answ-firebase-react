@@ -1,4 +1,4 @@
-const { admin, db } = require('../util/admin');
+const { admin, db } = require('./admin');
 
 module.exports = (req, res, next) => {
     let idToken;
@@ -9,8 +9,8 @@ module.exports = (req, res, next) => {
     ) {
         idToken = req.headers.authorization.split('Bearer ')[1];
     } else {
-        console.error('Token has not found');
-        res.status(403).json({ error: 'Unauthorized' });
+        console.error('No token found');
+        return res.status(403).json({ error: 'Unauthorized' });
     }
 
     admin
@@ -27,11 +27,14 @@ module.exports = (req, res, next) => {
                 .get();
         })
         .then((data) => {
-            req.user.handle = data.docs(0).data().handle;
+            req.user.userHandle = data.docs[0].data().userHandle;
+            req.user.userPhoto = data.docs[0].data().userPhoto;
+            req.user.userName = data.docs[0].data().userName;
+
             return next();
         })
         .catch((err) => {
             console.error('Error while verifying token, ', err);
-            res.status(400).json(err);
+            return res.status(400).json(err);
         });
 };

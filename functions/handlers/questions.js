@@ -14,7 +14,7 @@ exports.getAllQuestions = (req, res) => {
                     body: doc.data().body,
                     createdAt: doc.data().createdAt,
                     authorName: doc.data().authorName,
-                    authorUsername: doc.data().authorUsername,
+                    authorHandle: doc.data().authorHandle,
                     authorPhoto: doc.data().authorPhoto,
                     likesCount: doc.data().likesCount,
                     commentsCount: doc.data().commentsCount,
@@ -27,4 +27,35 @@ exports.getAllQuestions = (req, res) => {
             console.error(err);
             res.status(500).json('Questions not found, ', err);
         });
+};
+
+exports.createQuestion = (req, res) => {
+    if (isEmpty(req.body.body)) {
+        return res.status(400).json({ body: 'Body must not be empty' });
+    }
+
+    const question = {
+        body: req.body.body,
+        createdAt: new Date().toISOString(),
+        authorName: req.user.userName,
+        authorHandle: req.user.userHandle,
+        authorPhoto: req.user.userPhoto,
+        likesCount: 0,
+        commentsCount: 0,
+    };
+
+    db.collection('questions')
+        .add(question)
+        .then((doc) => {
+            const resQuestion = question;
+            resQuestion.questionId = doc.id;
+            return res.status(200).json(resQuestion);
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).json('Can not create question');
+        });
+
+    // eslint-disable-next-line consistent-return
+    return;
 };
