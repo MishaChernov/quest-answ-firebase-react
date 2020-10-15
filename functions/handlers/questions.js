@@ -83,3 +83,34 @@ exports.getQuestion = (req, res) => {
     // eslint-disable-next-line consistent-return
     return;
 };
+
+exports.deleteQuestion = (req, res) => {
+    let document = db.doc(`questions/${req.params.questionId}`);
+
+    document
+        .get()
+        .then(doc => {
+            if (!doc.exists) {
+                return res
+                    .status(404)
+                    .json({ error: 'Question was not found' });
+            }
+            if (req.user.userHandle !== doc.data().userHandle) {
+                return res
+                    .status(403)
+                    .json({ error: 'You are not author of this question' });
+            } else {
+                return document.delete();
+            }
+        })
+        .then(() => {
+            res.json({ message: 'Question was successfully deleted' })
+        })
+        .catch(err => {
+            console.error(err);
+            return res.status(500).json({ error: err.code });
+        });
+
+    // eslint-disable-next-line consistent-return
+    return;
+}

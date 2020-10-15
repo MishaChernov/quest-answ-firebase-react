@@ -10,6 +10,7 @@ const {
     getAllQuestions,
     createQuestion,
     getQuestion,
+    deleteQuestion,
 } = require('./handlers/questions');
 
 // users routes
@@ -19,6 +20,7 @@ app.post('/signup', signup);
 // questions routes
 app.get('/questions', getAllQuestions);
 app.get('/question/:questionId', getQuestion);
+app.delete('/question/:questionId', FBAuth, deleteQuestion);
 app.post('/question', FBAuth, createQuestion);
 
 exports.api = functions.region('europe-west1').https.onRequest(app);
